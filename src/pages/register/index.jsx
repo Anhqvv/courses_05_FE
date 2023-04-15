@@ -9,7 +9,7 @@ import {
 } from 'antd'
 import './register.scss'
 import { useState } from 'react'
-import { CallRegister } from '../../services/api'
+import { callRegister } from '../../services/api'
 import { useNavigate } from 'react-router-dom'
 const RegisterPage = () => {
   const [fullName, setFullname] = useState('')
@@ -25,10 +25,11 @@ const RegisterPage = () => {
   }
   const navigate = useNavigate()
   const onFinish = async () => {
-    let res = await CallRegister(fullName, email, password, phone)
+    let res = await callRegister(fullName, email, password, phone)
     console.log('res data', res)
     if (res?.data?._id) {
       message.success('Đăng ký tài khoản thành công!')
+      resetForm()
       navigate('/login')
     } else {
       notification.error({

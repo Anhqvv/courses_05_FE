@@ -1,11 +1,26 @@
-import { Button, Form, Input, Divider, message } from 'antd'
+import { Button, Form, Input, Divider, message, notification } from 'antd'
 import { useState } from 'react'
 import './login.scss'
 import { useNavigate } from 'react-router-dom'
+import { callLogin } from '../../services/api'
 const LoginPage = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const onFinish = async () => {}
+  const onFinish = async () => {
+    let res = await callLogin(username, password)
+    if (res?.data) {
+      console.log('res data', res.data.access_token)
+      message.success('Login is success!')
+      localStorage.setItem('access_token', res.data.access_token)
+      navigate('/')
+    } else {
+      notification.error({
+        message: 'Having something wrong',
+        description: res.message,
+        duration: 5
+      })
+    }
+  }
   const navigate = useNavigate()
 
   return (
@@ -51,11 +66,7 @@ const LoginPage = () => {
               </Form.Item>
 
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  onClick={() => onFinish()}
-                >
+                <Button type='primary' htmlType='submit'>
                   Login
                 </Button>
               </Form.Item>
