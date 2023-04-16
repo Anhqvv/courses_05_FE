@@ -3,7 +3,11 @@ import { useState } from 'react'
 import './login.scss'
 import { useNavigate } from 'react-router-dom'
 import { callLogin } from '../../services/api'
+import { useDispatch } from 'react-redux'
+import { doLoginAction } from '../../redux/account/accountSlice'
+
 const LoginPage = () => {
+  const dispatch = useDispatch()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const onFinish = async () => {
@@ -12,6 +16,7 @@ const LoginPage = () => {
       console.log('res data', res.data.access_token)
       message.success('Login is success!')
       localStorage.setItem('access_token', res.data.access_token)
+      dispatch(doLoginAction(res.data.user))
       navigate('/')
     } else {
       notification.error({

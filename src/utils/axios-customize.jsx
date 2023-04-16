@@ -5,7 +5,7 @@ const instance = axios.create({
   baseURL: baseURL,
   withCredentials: true
 })
-
+instance.defaults.headers.common = {'Authorization': `bearer ${localStorage.getItem('access_token')}`}
 // Add a response interceptor
 instance.interceptors.response.use(
   function (response) {
