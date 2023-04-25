@@ -13,7 +13,6 @@ const LoginPage = () => {
   const onFinish = async () => {
     let res = await callLogin(username, password)
     if (res?.data) {
-      console.log('res data', res.data.access_token)
       message.success('Login is success!')
       localStorage.setItem('access_token', res.data.access_token)
       dispatch(doLoginAction(res.data.user))

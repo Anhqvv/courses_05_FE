@@ -8,8 +8,12 @@ import Footer from './components/Footer'
 import Home from './pages/home'
 import RegisterPage from './pages/register'
 import { callFetchAccount } from './services/api'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { doGetAccountAction } from './redux/account/accountSlice'
+import Loading from './components/Loading'
+import NotFound from './components/NotFound'
+import AdminPage from './pages/admin'
+import ProtectedRoute from './components/ProtectedRoute'
 
 const Layout = () => {
   return (
@@ -20,10 +24,24 @@ const Layout = () => {
     </div>
   )
 }
+const LayoutAdmin = () => {
+  const isAdminRoute = window.location.pathname.startsWith('/admin')
+  const user = useSelector(state => state.account.user)
+  const userRole = user.role
+  return (
+    <div>
+      <Outlet />
+    </div>
+  )
+}
 
 export default function App () {
+  const isAuthenticated = useSelector(state => state.account.isAuthenticated)
   const dispatch = useDispatch()
   const getAccount = async () => {
+    if (window.location.pathname === '/login') {
+      return
+    }
     let res = await callFetchAccount()
     if (res && res.data) {
       dispatch(doGetAccountAction(res.data))
@@ -36,9 +54,32 @@ export default function App () {
     {
       path: '/',
       element: <Layout />,
-      errorElement: <div>404 not found</div>,
+      errorElement: <NotFound />,
       children: [
         { index: true, element: <Home /> },
+        {
+          path: 'contact',
+          element: <ContactPage />
+        },
+        {
+          path: 'bookpage',
+          element: <BookPage />
+        }
+      ]
+    },
+    {
+      path: '/admin',
+      element: <LayoutAdmin />,
+      errorElement: <NotFound />,
+      children: [
+        {
+          index: true,
+          element: (
+            <ProtectedRoute>
+              <AdminPage />
+            </ProtectedRoute>
+          )
+        },
         {
           path: 'contact',
           element: <ContactPage />
@@ -60,7 +101,14 @@ export default function App () {
   ])
   return (
     <>
-      <RouterProvider router={router} />
+      {isAuthenticated === true ||
+      window.location.pathname === '/login' ||
+      window.location.pathname === '/' ||
+      window.location.pathname === '/admin' ? (
+        <RouterProvider router={router} />
+      ) : (
+        <Loading />
+      )}
     </>
   )
 }

@@ -1,7 +1,8 @@
 const Footer = () => {
     return (
-        <div>Footer component</div>
+        <div className="footer"> Ant Design ©2023 Created by Ant UED</div>
     )
 }
 
 export default Footer
+
